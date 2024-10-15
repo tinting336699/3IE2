@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>勉強用サイトのテストページ</title>
+    <meta name="description" content="勉強用サイトの機能をテストするページです" />
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" href="./heads.css" />
+    <!-- <script src="./test.js" defer></script> -->
+    <meta name=”author” content="ryutokojou">
+    <style>
+        .word-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .word-item {
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            position: relative;
+        }
+
+        .word-item:last-child {
+            border-bottom: none;
+        }
+
+        .word {
+            font-weight: bold;
+        }
+
+        .meaning {
+            color: #666;
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+        }
+        .edit-btn2 {
+            position: absolute;
+            top: 5px;
+            right: 50px;
+            cursor: pointer;
+        }
+        form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <!-- iframe読み込み -->
+    <label class="label">
+        <div class="hamburger-menu">
+            <input type="checkbox" id="menu-btn-check">
+            <label for="menu-btn-check" class="menu-btn"><span></span></label>
+            <div class="menu-content">
+                <ul>
+                    <li>
+                        <a href="https://forstudy.cloudfree.jp/login.html">login</a>
+                    </li>
+                    <li>
+                        <a href="https://forstudy.cloudfree.jp/form.html">単語帳</a>
+                    </li>
+                    <li>
+                            <a href="https://forstudy.cloudfree.jp/help.html">helpメニュー</a>
+                        </li>
+                </ul>
+            </div>
+        </div>
+        <a class="title" href="https://forstudy.cloudfree.jp">勉強アシスト</a>
+        <div id="account"></div>
+    </label>
+    <!-- コンテンツ開始 -->
+    <ul class="word-list" id="wordList">
+    </ul>
+
+    <form id="wordForm">
+        <label for="word">Word:</label>
+        <textarea id="editWord" name="word"></textarea>
+        <label for="meaning">Meaning:</label>
+        <input type="text" id="editMean" name="meaning">
+    </form>
+    <button type="submit" id="editSubmitBtn">add</button>
+    <script>
+        function remove(id){
+            (async () => {
+                await getdata({ type: "delete", id: getParam("id"), userid: "", word: document.getElementById(`w${id}`).innerHTML, mean: "" })
+                data = JSON.parse(await getdata({ type: "select", id: getParam("id"), userid: "", word: "", mean: "" }))
+                document.getElementById("wordList").innerHTML = ""
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i];
+                    document.getElementById("wordList").innerHTML += `<li class="word-item">
+            <span class="word" id="w${i}">${element.word}</span>: <span class="meaning" id="m${i}">${element.mean}</span>
+            <div id="b${i}"><button class="edit-btn" onclick="editItem(${i})">Edit</button></div>
+            <div id="br${i}"><button class="edit-btn2" onclick="remove(${i})">remove</button></div>
+            <input type="check" id="c${i}" hidden>
+        </li>`
+                }
+            })();
+        }
+        document.getElementById("editSubmitBtn").addEventListener('click',()=>{
+            (async () => {
+                await getdata({ type: "add", id: getParam("id"), userid: "", word: document.getElementById(`editWord`).value, mean: document.getElementById(`editMean`).value })
+                data = JSON.parse(await getdata({ type: "select", id: getParam("id"), userid: "", word: "", mean: "" }))
+                document.getElementById("wordList").innerHTML = ""
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i];
+                    document.getElementById("wordList").innerHTML += `<li class="word-item">
+            <span class="word" id="w${i}">${element.word}</span>: <span class="meaning" id="m${i}">${element.mean}</span>
+            <div id="b${i}"><button class="edit-btn" onclick="editItem(${i})">Edit</button></div>
+            <div id="br${i}"><button class="edit-btn2" onclick="remove(${i})">remove</button></div>
+            <input type="check" id="c${i}" hidden>
+        </li>`
+                }
+            })();
+        })
+        function editItem(id) {
+            if (!document.getElementById(`c${id}`).checked) {
+                document.getElementById(`br${id}`).style.display = "none"
+                document.getElementById(`c${id}`).checked = 1
+                document.getElementById(`w${id}`).innerHTML += `<textarea value="${document.getElementById(`w${id}`).innerHTML}" id="iw${id}" hidden></textarea>`
+                document.getElementById(`m${id}`).innerHTML = `<input type="text" value="${document.getElementById(`m${id}`).innerHTML}" id="im${id}"><button onclick="edit(${id})>edit</button>`
+            }else{
+                document.getElementById(`br${id}`).style.display = ""
+                edit(id)
+            }
+        }
+        function edit(id) {
+            (async () => {
+                await getdata({ type: "edit", id: getParam("id"), userid: "", word: document.getElementById(`w${id}`).innerHTML.split("<")[0], mean: document.getElementById(`im${id}`).value })
+                data = JSON.parse(await getdata({ type: "select", id: getParam("id"), userid: "", word: "", mean: "" }))
+                document.getElementById("wordList").innerHTML = ""
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i];
+                    document.getElementById("wordList").innerHTML += `<li class="word-item">
+            <span class="word" id="w${i}">${element.word}</span>: <span class="meaning" id="m${i}">${element.mean}</span>
+            <div id="b${i}"><button class="edit-btn" onclick="editItem(${i})">Edit</button></div>
+            <div id="br${i}"><button class="edit-btn2" onclick="remove(${i})">remove</button></div>
+            <input type="check" id="c${i}" hidden>
+        </li>`
+                }
+            })();
+        }
+        function getParam(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        var data = {
+            type: "edit",
+            id: getParam("id"),
+            userid: "",
+            word: "",
+            mean: ""
+        };
+        (async () => {
+            data = JSON.parse(await getdata({ type: "select", id: getParam("id"), userid: "", word: "", mean: "" }))
+            console.log(data.length)
+            for (let i = 0; i < data.length; i++) {
+                const element = data[i];
+                document.getElementById("wordList").innerHTML += `<li class="word-item">
+            <span class="word" id="w${i}">${element.word}</span>: <span class="meaning" id="m${i}">${element.mean}</span>
+            <div id="b${i}"><button class="edit-btn" onclick="editItem(${i})">Edit</button></div>
+            <div id="br${i}"><button class="edit-btn2" onclick="remove(${i})">remove</button></div>
+            <input type="check" id="c${i}" hidden>
+        </li>`
+            }
+        })();
+        async function getdata(data2) {
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+            const body = `type=${data2.type}&word=${data2.word}&mean=${data2.mean}&id=${getParam("id")}&userid=${data2.userid}`;
+
+            const init = {
+                method: 'POST',
+                headers,
+                body
+            };
+
+            const response = await fetch('https://forstudy.cloudfree.jp/test.php', init);
+            console.log(`response status is ${response.status}`);
+            const mediaType = response.headers.get('content-type');
+            let data3;
+            if (mediaType.includes('json')) {
+                data3 = await response.json();
+            } else {
+                data3 = await response.text();
+            }
+            console.log(data3);
+            return data3
+        }
+    </script>
+</body>
+
+</html>

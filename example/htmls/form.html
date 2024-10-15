@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>勉強用サイトのテストページ</title>
+    <meta name="description" content="勉強用サイトの機能をテストするページです" />
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" href="./heads.css" />
+    <!-- <link rel="stylesheet" href="./test.css" /> -->
+    <!-- <script src="./test.js" defer></script> -->
+    <meta name=”author” content="ryutokojou">
+</head>
+
+<body id="body">
+    <!-- iframe読み込み -->
+    <label class="label">
+        <div class="hamburger-menu">
+            <input type="checkbox" id="menu-btn-check">
+            <label for="menu-btn-check" class="menu-btn"><span></span></label>
+            <div class="menu-content">
+                <ul>
+                    <li>
+                        <a href="https://forstudy.cloudfree.jp/login.html">login</a>
+                    </li>
+                    <li>
+                        <a href="https://forstudy.cloudfree.jp/form.html">単語帳</a>
+                    </li>
+                    <!-- <li>
+                        <a href="#">メニューリンク3</a>
+                    </li> -->
+                </ul>
+            </div>
+        </div>
+        <a class="title" href="#">勉強アシスト</a>
+        <div id="account"></div>
+    </label>
+    <!-- コンテンツ開始 -->
+    <div id="statup">
+        <form method="post" action="https://github-test.ryutokojou.workers.dev/">
+            <div>
+                <label for="type">type:</label>
+                <input type="text" name="type" id="type">
+            </div>
+            <div>
+                <label for="word">word:</label>
+                <input type="text" name="word" id="word">
+            </div>
+            <div>
+                <label for="mean">mean:</label>
+                <input type="text" name="mean" id="mean">
+            </div>
+            <div>
+                <label for="id">id:</label>
+                <input type="text" name="id" id="id">
+            </div>
+            <div>
+                <label for="userid">userid:</label>
+                <input type="text" name="userid" id="userid">
+            </div>
+            <div>
+                <label for="auth">authorization:</label>
+                <input type="text" name="auth" id="auth">
+            </div>
+            <div hidden>
+                <label for="token">:</label>
+                <input type="token" name="token" id="token">
+            </div>
+            <div>
+                <input type="submit" value="Subscribe!" />
+            </div>
+        </form>
+    </div>
+    <div>
+        <button id="json">json</button>
+    </div>
+    <div id="show"></div>
+    <script>
+        var data = {
+            type: "",
+            id: "",
+            userid: "",
+            word: "",
+            mean: ""
+        }
+        document.getElementById("json").addEventListener("click", () => {
+            (async () => {
+                console.log(await getdata())
+            })();
+        })
+        async function getdata() {
+            data.type = document.getElementById("type").value
+            data.id = document.getElementById("id").value
+            data.userid = document.getElementById("userid").value
+            data.word = document.getElementById("word").value
+            data.mean = document.getElementById("mean").value;
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+            const body = `type=${data.type}&word=${data.word}&mean=${data.mean}&id=${data.id}&userid=${data.userid}`;
+
+            const init = {
+                method: 'POST',
+                headers,
+                body
+            };
+
+            const response = await fetch('https://forstudy.cloudfree.jp/test.php', init);
+            console.log(`response status is ${response.status}`);
+            const mediaType = response.headers.get('content-type');
+            let data2;
+            if (mediaType.includes('json')) {
+                data2 = await response.json();
+            } else {
+                data2 = await response.text();
+            }
+            console.log(data2);
+            document.getElementById("show").innerHTML = data2
+            return data2
+        }
+        var data
+        for (let i = 0; i < documen.cookie.split(";").length; i++) {
+            const element = documen.cookie.split(";")[i];
+            if(element[0] == user_id){
+                document.getElementById("token").value = document.cookie.split(";")[i].split("=")[1]
+            }
+        }
+        document.getElementById("show").innerHTML = document.cookie
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+body{
+    margin: 0;
+}
+#statup{
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+    /* align-items: center; */
+    flex-direction: row;
+    gap: 80px;
+    justify-content: end;
+    margin: 0 auto;
+    padding:130px 0 100px 0;
+    /* height: 500px; */
+}
+.statup-content{
+    display: flex;
+    justify-content: center;
+}
+.statup-account{
+    display: flex;
+    flex-direction:column;
+}
+.a{
+    text-align: center;
+    font-size: 30px;
+    margin: 10px;
+    background-color: rgb(167, 255, 159);
+    border-radius: 10px 10px 10px 10px;
+    text-decoration: none;
+    color: black;
+}

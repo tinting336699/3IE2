@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>勉強用サイトのテストページ</title>
+    <meta name="description" content="勉強用サイトの機能をテストするページです" />
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" href="./test.css" />
+    <link rel="stylesheet" href="./heads.css" />
+    <!-- <script src="./test.js" defer></script> -->
+    <meta name=”author” content="ryutokojou">
+</head>
+
+<body id="body">
+    <!-- iframe読み込み -->
+    
+    <label class="label">
+        <div class="hamburger-menu">
+            <input type="checkbox" id="menu-btn-check">
+            <label for="menu-btn-check" class="menu-btn"><span></span></label>
+            <div class="menu-content">
+                <ul>
+                    <li>
+                        <a href="#">login</a>
+                    </li>
+                    <li>
+                        <a href="https://forstudy.cloudfree.jp/form.html">単語帳</a>
+                    </li>
+                    <!-- <li>
+                            <a href="#">メニューリンク3</a>
+                        </li> -->
+                </ul>
+            </div>
+        </div>
+        <a class="title" href="https://forstudy.cloudfree.jp">勉強アシスト</a>
+        <div id="account"></div>
+    </label>
+    <!-- コンテンツ開始 -->
+    <form method="post" action="./login.php">
+        <div>
+            <label for="userid">userid:</label>
+            <input type="text" name="userid" id="userid">
+        </div>
+        <div>
+            <label for="word">pass:</label>
+            <input type="password" name="word" id="word">
+        </div>
+    </form>
+    <div>
+        <button id="json">login!</button>
+    </div>
+    <div id="show"></div>
+    <script>
+        document.getElementById("json").addEventListener("click", () => {
+            (async () => {
+                var aaaa = await getdata()
+
+                if(aaaa == "false" || aaaa == "error"){
+                    document.getElementById("show").innerHTML = "ログインに失敗しました。"
+                }else{
+                    document.getElementById("show").innerHTML = "ログインに成功しました。"
+                }
+            })();
+        })
+        async function getdata() {
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/x-www-form-urlencoded');
+
+            const body = `word=${document.getElementById("word").value}&userid=${document.getElementById("userid").value}`;
+
+            const init = {
+                method: 'POST',
+                headers,
+                body
+            };
+
+            const response = await fetch('https://forstudy.cloudfree.jp/login.php', init);
+            const mediaType = response.headers.get('content-type');
+            let data2;
+            if (mediaType.includes('json')) {
+                data2 = await response.json();
+            } else {
+                data2 = await response.text();
+            }
+            return data2
+        }
+    </script>
+</body>
+
+</html>
